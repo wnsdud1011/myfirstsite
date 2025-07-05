@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>개쩌는 돌림판</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 50px 20px;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  #wheel {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 12px solid #ff6f91;
+    box-shadow: 0 0 20px rgba(255, 111, 145, 0.6);
+    overflow: hidden;
+  }
+  .segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0% 0%;
+    border: 2px solid white;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 15px;
+    user-select: none;
+    font-size: 1.2rem;
+  }
+  #pointer {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    margin-left: -15px;
+    width: 0; 
+    height: 0; 
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 30px solid #ff6f91;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+  }
+  #spinBtn {
+    margin-top: 40px;
+    padding: 15px 50px;
+    font-size: 1.3rem;
+    background: #ff6f91;
+    border: none;
+    border-radius: 35px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 5px 10px rgba(255, 111, 145, 0.7);
+    transition: background-color 0.3s ease;
+  }
+  #spinBtn:hover {
+    background-color: #ff3b68;
+  }
+  #result {
+    margin-top: 35px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    min-height: 2.5rem;
+  }
+</style>
+</head>
+<body>
+
+<div id="wheel">
+  <div id="pointer"></div>
+</div>
+<button id="spinBtn">개쩌는 돌림판</button>
+<div id="result"></div>
+
+<script>
+  const items = [
+    "산뜻하게 공부",
+    "재미있게 공부",
+    "간단하게 공부",
+    "그냥그저 공부",
+    "집중하며 공부",
+    "12시간 공부"
+  ];
+
+  const wheel = document.getElementById("wheel");
+  const result = document.getElementById("result");
+  const spinBtn = document.getElementById("spinBtn");
+
+  const segmentCount = items.length;
+  const segmentAngle = 360 / segmentCount;
+
+  // 돌림판 조각 생성
+  for(let i=0; i < segmentCount; i++) {
+    const seg = document.createElement("div");
+    seg.className = "segment";
+    seg.style.transform = `rotate(${segmentAngle * i}deg) skewY(${90 - segmentAngle}deg)`;
+    seg.style.background = i % 2 === 0 ? "#ffb6b9" : "#ffc8cb";
+    seg.innerHTML = `<div style="transform: skewY(-${90 - segmentAngle}deg) rotate(${segmentAngle / 2}deg); transform-origin: 0 0;">${items[i]}</div>`;
+    wheel.appendChild(seg);
+  }
+
+  let spinning = false;
+
+  spinBtn.addEventListener("click", () => {
+    if(spinning) return;
+    spinning = true;
+    result.textContent = "";
+    spinBtn.disabled = true;
+
+    const duration = Math.random() * 3 + 3; // 3~6초
+    const spins = Math.floor(Math.random() * 5 + 5) * 360; // 5~10바퀴
+
+    wheel.style.transition = `transform ${duration}s cubic-bezier(0.33, 1, 0.68, 1)`;
+    wheel.style.transform = `rotate(${spins}deg)`;
+
+    setTimeout(() => {
+      const actualDeg = spins % 360;
+      // 포인터 기준 결과 인덱스 계산
+      const index = Math.floor(((360 - actualDeg + segmentAngle / 2) % 360) / segmentAngle);
+      result.textContent = `결과: 어쩌라고 놀거임 `;
+      spinning = false;
+      spinBtn.disabled = false;
+    }, duration * 1000 + 100);
+  });
+</script>
+
+</body>
+</html>
